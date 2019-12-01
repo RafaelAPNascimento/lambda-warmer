@@ -1,0 +1,35 @@
+description: API Rest do Servidor de Sessão.
+
+settings:
+  minimum-compression-size: 0
+
+functions:
+  function01:
+    handler: lambda.Function01
+    description: Função 01.
+    tags:
+      warmup: true
+
+  functionX:
+    handler: lambda.FunctionX
+    description: Não deve assinar SNS.
+    tags:
+      warmup: false
+
+  function02:
+    handler: lambda.Function02
+    description: Função 02.
+    tags:
+      warmup: true
+
+  function03:
+    handler: lambda.Function03
+    description: Função 03.
+    tags:
+      warmup: true
+
+  global-warmer:
+    handler: lambda.GlobalWarmer
+    description: Função 03.
+    tags:
+      warmup: true
