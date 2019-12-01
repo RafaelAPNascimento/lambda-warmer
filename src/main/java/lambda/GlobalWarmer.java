@@ -17,7 +17,7 @@ public class GlobalWarmer implements RequestHandler<Void, String>
     {
         final AWSLambda lambda = AWSLambdaClientBuilder.defaultClient();
         InvokeRequest req = new InvokeRequest()
-                .withFunctionName("app-test-function01")
+                .withFunctionName("app-function01")
                 .withInvocationType(InvocationType.Event)   //async
                 .withPayload("{\"warmup\":\"true\"}");
 

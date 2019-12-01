@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "app-name" {
-  default = "app-test"
+  default = "app"
 }
 
 variable "lambda-role" {

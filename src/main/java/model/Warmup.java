@@ -12,5 +12,5 @@ import lombok.Setter;
 public class Warmup
 {
 
-    private boolean warmup;
+    private transient boolean warmup = false;
 }
