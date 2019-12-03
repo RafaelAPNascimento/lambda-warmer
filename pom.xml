@@ -40,7 +40,12 @@
             <artifactId>aws-lambda-java-events</artifactId>
             <version>2.2.7</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-cloudwatch -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-cloudwatch</artifactId>
+            <version>1.11.683</version>
+        </dependency>
     </dependencies>
 
     <build>

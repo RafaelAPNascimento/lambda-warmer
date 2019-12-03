@@ -1,0 +1,17 @@
+
+======== time elapsed calling 'async'
+    9159, 438, 1057, 261, 387, 354, 278, 347, 298, 206, 215, 255
+
+    InvokeResult payload:   empty
+
+
+======= time elapsed not 'async'
+    10000, 380, 757, 200, 182, 325, 277, 340
+
+    InvokeResult payload:   "Request feita pelo Warmup", ...
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+======== time elapsed calling AWSLambdaAsyncClientBuilder
+
+

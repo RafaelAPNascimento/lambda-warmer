@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "lambda-warmer" {
-  bucket = "${var.app-name}-38295504053"
+  bucket = "${var.app-name}-88909188022e"
   region = var.region
   acl = "private"
   tags = {

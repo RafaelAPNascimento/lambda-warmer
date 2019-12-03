@@ -15,6 +15,19 @@ public abstract class AbstractFunction<I,O> implements RequestHandler<I,O>
 
         if (input != null && Warmup.class.isInstance(input) && Warmup.class.cast(input).isWarmup())
         {
+            Warmup warmup = (Warmup) input;
+            logger.log(String.format("\n============= %s input: %s\n", this.getClass().getName(), input.toString()));
+
+            if(warmup.getDelay() > 0)
+            {
+                logger.log(String.format("\n================ delay: %s\n", warmup.getDelay()));
+                try {
+                    Thread.sleep(warmup.getDelay());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             return (O) "Request feita pelo warmup";
         }
         return handler(input, context);

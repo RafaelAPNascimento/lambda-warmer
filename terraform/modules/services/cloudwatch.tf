@@ -2,6 +2,7 @@ resource "aws_cloudwatch_event_rule" "warmup-rule" {
   name = "warmup-rule"
   description = "Regra de warmup para os lambdas"
   schedule_expression = "rate(1 minute)"
+  is_enabled = true
 }
 
 resource "aws_cloudwatch_log_group" "lambda-cloudwatch-logs" {
