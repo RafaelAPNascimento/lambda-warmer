@@ -24,6 +24,16 @@ resource "aws_lambda_function" "lambda-function" {
   publish = true
 }
 
+resource "aws_lambda_alias" "alias-stg" {
+  depends_on = [
+    aws_lambda_function.lambda-function
+  ]
+  for_each = aws_lambda_function.lambda-function
+  function_name = each.value.function_name
+  function_version = each.value.version
+  name = "stg"
+}
+
 resource "aws_lambda_permission" "allow-cloudwatch-to-lambda" {
 
   function_name = aws_lambda_function.lambda-function["global-warmer"].function_name
@@ -31,6 +41,12 @@ resource "aws_lambda_permission" "allow-cloudwatch-to-lambda" {
   principal = "events.amazonaws.com"
   source_arn = aws_cloudwatch_event_rule.warmup-rule.arn
   statement_id = "AllowExecutionFromCloudWatch"
+}
+
+resource "aws_lambda_provisioned_concurrency_config" "example" {
+  function_name                     = aws_lambda_alias.alias-stg.function_name
+  provisioned_concurrent_executions = 5
+  qualifier                         = aws_lambda_alias.alias-stg.name
 }
 
 //resource "aws_lambda_permission" "allow-sns-to-lambda" {

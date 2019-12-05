@@ -1,9 +1,8 @@
 package lambda;
 
+import com.amazonaws.handlers.AsyncHandler;
 import com.amazonaws.services.lambda.*;
-import com.amazonaws.services.lambda.model.InvocationType;
-import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
+import com.amazonaws.services.lambda.model.*;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -22,6 +21,22 @@ import java.util.concurrent.Future;
 public class GlobalWarmer implements RequestHandler<Void, String>
 {
     LambdaLogger logger;
+
+    private class AsyncLambdaHandler implements AsyncHandler<InvokeRequest, InvokeResult>
+    {
+        @Override
+        public void onError(Exception e)
+        {
+            logger.log(String.format("========= Erro chama async concluida com erro: %s\n",e.getMessage()));
+        }
+
+        @Override
+        public void onSuccess(InvokeRequest request, InvokeResult invokeResult)
+        {
+            logger.log(String.format("========= OK chama async concluida: %s\n",request.getFunctionName()));
+        }
+    }
+
     @Override
     public String handleRequest(final Void input, final Context context)
     {
@@ -34,54 +49,42 @@ public class GlobalWarmer implements RequestHandler<Void, String>
     {
         AWSLambdaAsync lambda = AWSLambdaAsyncClientBuilder.defaultClient();
 
+        ListFunctionsResult listResult = lambda.listFunctions();
+        List<FunctionConfiguration> list = listResult.getFunctions();
+
+        for (FunctionConfiguration f : list)
+        {
+            logger.log(String.format("\n=========== name: %s\n", f.getFunctionName()));
+            logger.log(String.format("\n=========== arn: %s\n", f.getFunctionArn()));
+        }
+        logger.log("\n==");
+
         InvokeRequest req = new InvokeRequest()
                 .withFunctionName("app-function01")
+                .withQualifier("stg")
                 //.withInvocationType(InvocationType.Event)
                 .withPayload("{\"warmup\":\"true\", \"delay\":\"0\"}");
 
-        //for(int i = 0; i < 10; i++){}
         Instant start = Instant.now();
-        Future<InvokeResult> future_res = lambda.invokeAsync(req);
-        Instant finish = Instant.now();
+        Future<InvokeResult> future_res = lambda.invokeAsync(req, new AsyncLambdaHandler());
 
-        long elapsed = Duration.between(start, finish).toMillis();
-        logger.log(String.format("\n============== elapsed: %s\n", elapsed));
+        logger.log("\n========= Waiting for async callback\n");
 
-        logger.log("\nWaiting for async callback\n");
-        int i = 0;
         while (!future_res.isDone() && !future_res.isCancelled()) {
             // perform some other tasks...
             try {
                 Thread.sleep(100);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 logger.log("\nThread.sleep() was interrupted!\n");
                 System.exit(0);
             }
-            i++;
-            if(i == 20)
-                break;
         }
 
-        if(i == 20)
-            logger.log("\n=========== i == 20");
-        else{
-            try {
-                InvokeResult res = future_res.get();
-                if (res.getStatusCode() == 200) {
-                    System.out.println("\nLambda function returned:");
-                    ByteBuffer response_payload = res.getPayload();
-                    logger.log(String.format("\n=========== resp: %s\n", new String(response_payload.array())));
-                }
-                else {
-                    System.out.format("Received a non-OK response from AWS: %d\n",
-                            res.getStatusCode());
-                }
-            }
-            catch (InterruptedException | ExecutionException e) {
-                logger.log(e.getMessage());
-            }
-        }
+        Instant finish = Instant.now();
+        long elapsed = Duration.between(start, finish).toMillis();
+        logger.log("======== DONE call");
+        logger.log(String.format("\n============== elapsed: %s\n", elapsed));
+
 
         return "Warmer";
     }

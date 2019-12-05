@@ -9,27 +9,32 @@ functions:
     description: Função 01.
     tags:
       warmup: true
+      warmup_concurrency: 10
 
   functionX:
     handler: lambda.FunctionX
     description: Não deve assinar SNS.
     tags:
       warmup: false
+      warmup_concurrency: 5
 
   function02:
     handler: lambda.Function02
     description: Função 02.
     tags:
       warmup: true
+      warmup_concurrency: 1
 
   function03:
     handler: lambda.Function03
     description: Função 03.
     tags:
       warmup: true
+      warmup_concurrency: 1
 
   global-warmer:
     handler: lambda.GlobalWarmer
     description: Função 03.
     tags:
       warmup: true
+      warmup_concurrency: 0
